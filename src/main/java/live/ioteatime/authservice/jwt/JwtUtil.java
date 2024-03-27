@@ -1,13 +1,12 @@
 package live.ioteatime.authservice.jwt;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.SecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.security.SignatureException;
 import java.util.Date;
 @Slf4j
 @Component
@@ -33,9 +32,16 @@ public class JwtUtil {
         if (jwt.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        Jws<Claims> claimsJwts = Jwts.parser()
-                .setSigningKey(secretValue)
-                .build().parseSignedClaims(jwt);
-        return claimsJwts.getBody().getSubject();
+        try {
+            Jws<Claims> claimsJwts = Jwts.parser()
+                    .setSigningKey(secretValue)
+                    .build().parseSignedClaims(jwt);
+            return claimsJwts.getBody().getSubject();
+        } catch (SecurityException | MalformedJwtException e) {
+            log.error("유효하지 않은 토큰 {} ", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("만료된 않은 토큰 {} ", e.getMessage());
+        }
+        return null;
     }
 }
