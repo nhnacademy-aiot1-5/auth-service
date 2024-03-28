@@ -29,7 +29,6 @@ import static org.mockito.BDDMockito.given;
 class JwtAuthenticationFilterTest {
 
 
-
     @Mock
     private AuthenticationManager authenticationManager;
 
