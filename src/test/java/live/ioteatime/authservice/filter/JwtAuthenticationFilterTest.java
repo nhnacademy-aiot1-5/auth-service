@@ -17,16 +17,21 @@ import org.springframework.security.core.Authentication;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest
@@ -77,13 +82,32 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void successfulAuthentication() throws ServletException, IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ServletOutputStream servletOutputStream = new ServletOutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                outputStream.write(b);
+            }
 
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil, authenticationManager, mapper);
+            @Override
+            public boolean isReady() {
+                return true;
+            }
 
-        given(jwtAuthenticationFilter.attemptAuthentication(request, response)).willReturn(authentication);
+            @Override
+            public void setWriteListener(WriteListener writeListener) {
+                // Do nothing
+            }
+        };
+
+        when(response.getOutputStream()).thenReturn(servletOutputStream);
 
         jwtAuthenticationFilter.successfulAuthentication(request, response, chain, authentication);
+
         String jwtToken = jwtUtil.createJwt(authentication.getName());
-        verify(response).addHeader("Authorization", "Bearer" + jwtToken);
+        Map<String, String> expectedToken = Map.of("token", jwtToken);
+        String expectedResponse = mapper.writeValueAsString(expectedToken);
+
+        assertEquals(expectedResponse, outputStream.toString());
     }
 }
