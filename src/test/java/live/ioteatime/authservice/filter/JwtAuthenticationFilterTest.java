@@ -7,13 +7,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -23,22 +26,20 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
-@WebMvcTest(JwtUtil.class)
 @Slf4j
+@SpringBootTest
 class JwtAuthenticationFilterTest {
-
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Mock
     private AuthenticationManager authenticationManager;
-
-
     @Mock
     private HttpServletRequest request;
-
     @Mock
     private HttpServletResponse response;
-
     @Mock
     private FilterChain chain;
     @InjectMocks
@@ -68,6 +69,26 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void successfulAuthentication() {
+    void successfulAuthentication() throws ServletException, IOException {
+        String id = "testId";
+        String pw = "testPw";
+        ObjectMapper mapper = new ObjectMapper();
+
+        LoginRequestDto loginRequestDto = new LoginRequestDto();
+        loginRequestDto.setId(id);
+        loginRequestDto.setPw(pw);
+        String s = mapper.writeValueAsString(loginRequestDto);
+        InputStream inputStream = new ByteArrayInputStream(s.getBytes());
+
+        given(request.getInputStream()).willReturn(new DelegatingServletInputStream(inputStream));
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken("test", "test");
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil, authenticationManager, mapper);
+
+        given(jwtAuthenticationFilter.attemptAuthentication(request, response)).willReturn(authentication);
+
+        jwtAuthenticationFilter.successfulAuthentication(request, response, chain, authentication);
+        String jwtToken = jwtUtil.createJwt(authentication.getName());
+        verify(response).addHeader("Authorization", "Bearer" + jwtToken);
     }
 }

@@ -1,30 +1,37 @@
 package live.ioteatime.authservice.jwt;
 
+
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.SecurityException;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Component;
 
-import java.security.SignatureException;
+import javax.annotation.PostConstruct;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Date;
+
 @Slf4j
-@Component
 public class JwtUtil {
     @Value("${secreet.key}")
     private String secretValue;
-    public String createJwt(String userId) {
-        SignatureAlgorithm hs256 = SignatureAlgorithm.HS256;
-        log.info(secretValue);
+    private SecretKey key;
 
-        Date date = new Date();
-        //TODO Roles도 clams에 넣기
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(secretValue.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String createJwt(String userId) {
+        Claims claims = Jwts.claims().setSubject(userId);
         return Jwts.builder()
-                .setHeaderParam("type", "jwt")
-                .setSubject(userId)
-                .setIssuedAt(date)
-                .setExpiration(new Date(System.currentTimeMillis() + 1 * (1000 * 60 * 60 * 24 * 365)))
-                .signWith(hs256, secretValue)
+                .setClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(Duration.ofHours(3).toMillis()))
+                .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
@@ -33,10 +40,12 @@ public class JwtUtil {
             throw new IllegalArgumentException();
         }
         try {
-            Jws<Claims> claimsJwts = Jwts.parser()
-                    .setSigningKey(secretValue)
-                    .build().parseSignedClaims(jwt);
-            return claimsJwts.getBody().getSubject();
+            Claims claimsJwts = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(jwt)
+                    .getBody();
+            return claimsJwts.getSubject();
         } catch (SecurityException | MalformedJwtException e) {
             log.error("유효하지 않은 토큰 {} ", e.getMessage());
         } catch (ExpiredJwtException e) {
