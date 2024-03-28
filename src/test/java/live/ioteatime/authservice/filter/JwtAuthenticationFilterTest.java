@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import live.ioteatime.authservice.domain.LoginRequestDto;
 import live.ioteatime.authservice.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -44,12 +45,16 @@ class JwtAuthenticationFilterTest {
     @InjectMocks
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Test
-    void attemptAuthentication() throws IOException {
+    private Authentication authentication;
+    private ObjectMapper mapper;
+
+    @BeforeEach
+    void setup() throws IOException {
         String id = "testId";
         String pw = "testPw";
-        ObjectMapper mapper = new ObjectMapper();
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(new JwtUtil(), authenticationManager, mapper);
+        mapper = new ObjectMapper();
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil, authenticationManager, mapper);
+        authentication = new UsernamePasswordAuthenticationToken("test", "test");
 
         LoginRequestDto loginRequestDto = new LoginRequestDto();
         loginRequestDto.setId(id);
@@ -58,7 +63,11 @@ class JwtAuthenticationFilterTest {
         InputStream inputStream = new ByteArrayInputStream(s.getBytes());
 
         given(request.getInputStream()).willReturn(new DelegatingServletInputStream(inputStream));
-        Authentication authentication = new UsernamePasswordAuthenticationToken("test", "test");
+    }
+
+    @Test
+    void attemptAuthentication() {
+
         given(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).willReturn(authentication);
 
         Authentication result = jwtAuthenticationFilter.attemptAuthentication(request, response);
@@ -68,19 +77,7 @@ class JwtAuthenticationFilterTest {
 
     @Test
     void successfulAuthentication() throws ServletException, IOException {
-        String id = "testId";
-        String pw = "testPw";
-        ObjectMapper mapper = new ObjectMapper();
 
-        LoginRequestDto loginRequestDto = new LoginRequestDto();
-        loginRequestDto.setId(id);
-        loginRequestDto.setPw(pw);
-        String s = mapper.writeValueAsString(loginRequestDto);
-        InputStream inputStream = new ByteArrayInputStream(s.getBytes());
-
-        given(request.getInputStream()).willReturn(new DelegatingServletInputStream(inputStream));
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken("test", "test");
         jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil, authenticationManager, mapper);
 
         given(jwtAuthenticationFilter.attemptAuthentication(request, response)).willReturn(authentication);
