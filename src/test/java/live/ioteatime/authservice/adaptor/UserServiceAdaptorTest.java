@@ -16,7 +16,6 @@ class UserServiceAdaptorTest {
     @Mock
     private UserServiceAdaptor userServiceAdaptor;
 
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this); // 목 객체 초기화
