@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,11 +33,12 @@ public class SecurityConfig {
                 .and()
                 .formLogin().disable() // formLogin은 세션 기반 인증에 사용되고 로그인 폼을 통한 인증과 세션 생성을 관리함
                 .httpBasic().disable()
-                .addFilter(new JwtAuthenticationFilter(jwtUtil(),
-                        authenticationManager(null), objectMapper()))
+                .addFilterAt(new JwtAuthenticationFilter(jwtUtil(),
+                        authenticationManager(null), objectMapper()), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/api/users/**")
                 .permitAll();
+
         return http.build();
     }
 
