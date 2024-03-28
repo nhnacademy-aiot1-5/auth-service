@@ -15,6 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -46,7 +47,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         String jwtToken = jwtUtil.createJwt(authResult.getName());
-        response.addHeader("Authorization", "Bearer" + jwtToken);
-        super.successfulAuthentication(request, response, chain, authResult);
+        Map<String, String> token = Map.of("token", jwtToken);
+        String resp = objectMapper.writeValueAsString(token);
+        response.getOutputStream().print(resp);
+        // 원래 시큐리티는 성공 시 컨텍스트 홀더에 authentication 객체를 저장
+        // 우리는 단지 토큰을 만들어서 반환만하면 되기때문에 super를 호출할 필요가 없다.
     }
 }
