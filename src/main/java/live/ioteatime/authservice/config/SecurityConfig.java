@@ -31,7 +31,7 @@ public class SecurityConfig {
                 .disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .formLogin().disable() // formLogin은 세션 기반 인증에 사용되고 로그인 폼을 통한 인증과 세션 생성을 관리함
+                .formLogin().disable()
                 .httpBasic().disable()
                 .addFilterAt(new JwtAuthenticationFilter(jwtUtil(),
                         authenticationManager(null), objectMapper()), UsernamePasswordAuthenticationFilter.class)
