@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+
 @SpringBootTest
 class JwtUtilTest {
     private String userId;
@@ -18,7 +19,7 @@ class JwtUtilTest {
 
     @BeforeEach
     void setUp() {
-        userId = "test";
+        userId = "aa";
 
         jwt = jwtUtil.createJwt(userId);
     }
@@ -30,7 +31,7 @@ class JwtUtilTest {
 
     @Test
     void getUserIdToJwt() {
-        String actual = jwtUtil.getUserId(jwt);
-        assertEquals("test", actual);
+       String actual= jwtUtil.getUserId(jwt);
+        assertEquals("aa", actual);
     }
 }
