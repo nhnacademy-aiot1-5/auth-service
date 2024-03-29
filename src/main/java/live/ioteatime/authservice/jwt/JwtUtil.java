@@ -5,6 +5,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.crypto.SecretKey;
@@ -14,7 +15,7 @@ import java.util.Date;
 
 @Slf4j
 public class JwtUtil {
-    @Value("${secreet.key}")
+    @Value("${secret.key.get}")
     private String secretValue;
     private SecretKey key;
 
@@ -24,11 +25,13 @@ public class JwtUtil {
     }
 
     public String createJwt(String userId) {
+        log.info(secretValue);
         Claims claims = Jwts.claims().setSubject(userId);
+        Date now = new Date();
         return Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(Duration.ofHours(3).toMillis()))
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + Duration.ofHours(3).toMillis()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -47,7 +50,7 @@ public class JwtUtil {
         } catch (SecurityException | MalformedJwtException e) {
             log.error("유효하지 않은 토큰 {} ", e.getMessage());
         } catch (ExpiredJwtException e) {
-            log.error("만료된 않은 토큰 {} ", e.getMessage());
+            log.error("만료된 토큰 {} ", e.getMessage());
         }
         return null;
     }
