@@ -2,6 +2,7 @@ package live.ioteatime.authservice.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import live.ioteatime.authservice.domain.LoginRequestDto;
+import live.ioteatime.authservice.domain.LoginResponseDto;
 import live.ioteatime.authservice.jwt.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -81,11 +80,11 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void successfulAuthentication() throws ServletException, IOException {
+    void successfulAuthentication() throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ServletOutputStream servletOutputStream = new ServletOutputStream() {
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b) {
                 outputStream.write(b);
             }
 
@@ -96,7 +95,6 @@ class JwtAuthenticationFilterTest {
 
             @Override
             public void setWriteListener(WriteListener writeListener) {
-                // Do nothing
             }
         };
 
@@ -105,8 +103,8 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.successfulAuthentication(request, response, chain, authentication);
 
         String jwtToken = jwtUtil.createJwt(authentication.getName());
-        Map<String, String> expectedToken = Map.of("token", jwtToken);
-        String expectedResponse = mapper.writeValueAsString(expectedToken);
+        LoginResponseDto loginResponseDto = new LoginResponseDto("Bearer", jwtToken);
+        String expectedResponse = mapper.writeValueAsString(loginResponseDto);
 
         assertEquals(expectedResponse, outputStream.toString());
     }
