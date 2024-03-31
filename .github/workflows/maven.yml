@@ -30,7 +30,7 @@ jobs:
 
     - name: Prepare application.properties
       run: |
-        sed -i 's/\${SECRET_KEY}/'"$SECRET_KEY"'/g' src/main/resources/application.properties
+        echo "SECRET_KEY: $SECRET_KEY"
         echo "DISCOVERY_ADDRESS: $DISCOVERY_ADDRESS"
         echo "DISCOVERY_ID: $DISCOVERY_ID"
         echo "DISCOVERY_PW: $DISCOVERY_PW"
