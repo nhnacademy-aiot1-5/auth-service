@@ -30,7 +30,7 @@ jobs:
 
     - name: Prepare application.properties
       run: |
-        echo "SECRET_KEY=$SECRET_KEY" >> .env
+        sed -i 's/\${SECRET_KEY}/'"$SECRET_KEY"'/g' src/main/resources/application.properties
 
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
