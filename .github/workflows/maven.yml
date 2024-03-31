@@ -35,7 +35,7 @@ jobs:
         DISCOVERY_ID: ${{ secrets.DISCOVERY_ID }}
         DISCOVERY_PW: ${{ secrets.DISCOVERY_PW }}
       run: |
-        echo "SECRET_KEY: SECRET_KEY"
+        echo "SECRET_KEY: $SECRET_KEY"
         echo "DISCOVERY_ADDRESS: $DISCOVERY_ADDRESS"
         echo "DISCOVERY_ID: $DISCOVERY_ID"
         echo "DISCOVERY_PW: $DISCOVERY_PW"
