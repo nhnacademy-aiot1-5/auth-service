@@ -29,7 +29,7 @@ jobs:
         cache: maven
     - name: Prepare application.properties
       run:
-        sed -i 's/\${SECRET_KEY}/'"$SECRET_KEY"'/g' src/main/resources/application.properties
+        sed -i 's/\${SECRET_KEY}/'"$SECRET_KEY"'/g' src/main/resources/application-dev.properties
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
 
