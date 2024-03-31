@@ -35,9 +35,9 @@ jobs:
     - name: Prepare application.properties
       run: |
         echo "SECRET_KEY=$SECRET_KEY" >> .env
-        echo "DISCOVERY_ADDRESS=DISCOVERY_ADDRESS" >> .env
-        echo "DISCOVERY_ID=DISCOVERY_ID" >> .env
-        echo "DISCOVERY_PW=DISCOVERY_PW" >> .env
+        echo "DISCOVERY_ADDRESS=$DISCOVERY_ADDRESS" >> .env
+        echo "DISCOVERY_ID=$DISCOVERY_ID" >> .env
+        echo "DISCOVERY_PW=$DISCOVERY_PW" >> .env
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
