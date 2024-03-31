@@ -19,6 +19,12 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DISCOVERY_ADDRESS: ${{ secrets.DISCOVERY_ADDRESS }}
+      DISCOVERY_ID: ${{ secrets.DISCOVERY_ID }}
+      DISCOVERY_PW: ${{ secrets.DISCOVERY_PW }}
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 11
@@ -30,7 +36,7 @@ jobs:
 
     - name: Prepare application.properties
       run: |
-        sed -i 's/\${SECRET_KEY}/'"$SECRET_KEY"'/g' src/main/resources/application.properties
+        echo "SECRET_KEY=$SECRET_KEY" >> .env
 
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
