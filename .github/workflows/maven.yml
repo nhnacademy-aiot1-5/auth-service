@@ -32,9 +32,9 @@ jobs:
         sed -i 's/\${SECRET_KEY}/'"$SECRET_KEY"'/g' src/main/resources/application.properties
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DISCOVERY_ADDRESS: ${{secrets.DISCOVERY_ADDRESS}}
-        DISCOVERY_ID: ${{secrets.DISCOVERY_ID}}
-        DISCOVERY_PW: ${{secrets.DISCOVERY_PW}}
+        DISCOVERY_ADDRESS: ${{ secrets.DISCOVERY_ADDRESS }}
+        DISCOVERY_ID: ${{ secrets.DISCOVERY_ID }}
+        DISCOVERY_PW: ${{ secrets.DISCOVERY_PW }}
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
