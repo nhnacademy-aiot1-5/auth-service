@@ -17,11 +17,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      DISCOVERY_ADDRESS: ${{ secrets.DISCOVERY_ADDRESS }}
-      DISCOVERY_ID: ${{ secrets.DISCOVERY_ID }}
-      DISCOVERY_PW: ${{ secrets.DISCOVERY_PW }}
+#    env:
+#      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#      DISCOVERY_ADDRESS: ${{ secrets.DISCOVERY_ADDRESS }}
+#      DISCOVERY_ID: ${{ secrets.DISCOVERY_ID }}
+#      DISCOVERY_PW: ${{ secrets.DISCOVERY_PW }}
 
     steps:
     - uses: actions/checkout@v3
