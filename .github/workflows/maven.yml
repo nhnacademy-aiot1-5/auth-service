@@ -19,6 +19,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    run: |
+      echo "SECRET_KEY=$SECRET_KEY" >> .env
+      echo "DISCOVERY_ADDRESS=DISCOVERY_ADDRESS" >> .env
+      echo "DISCOVERY_ID=DISCOVERY_ID" >> .env
+      echo "DISCOVERY_PW=DISCOVERY_PW" >> .env
     env:
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       DISCOVERY_ADDRESS: ${{ secrets.DISCOVERY_ADDRESS }}
@@ -34,15 +39,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Prepare application.properties
-      run: |
-        echo "SECRET_KEY=$SECRET_KEY" >> .env
 
-      env:
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-        DISCOVERY_ADDRESS: ${{ secrets.DISCOVERY_ADDRESS }}
-        DISCOVERY_ID: ${{ secrets.DISCOVERY_ID }}
-        DISCOVERY_PW: ${{ secrets.DISCOVERY_PW }}
 
 
     - name: Build with Maven
