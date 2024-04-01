@@ -13,7 +13,7 @@ import java.util.Optional;
 @FeignClient(value = "api-service", path = "/users")
 public interface UserServiceAdaptor {
     /**
-     *
+     * api 서버에 userId에 맞는 유저 가져온다.
      * @param id 주소값의 아이디값
      * @return 유저아이디에 맞는 유저 id,pw가 User 매핑되어 리턴
      */

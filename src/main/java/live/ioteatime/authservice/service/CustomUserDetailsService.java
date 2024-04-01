@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     private final UserServiceAdaptor userServiceAdaptor;
 
     /**
-     *
+     * 직접 api 서버에 유저정보를 얻어와 AuthenticationProvider 에게전달
      * @param username  api 서버에 유저 정보를 요청하기위한 파라미터
      * @return UserDetails 의 User 객체
      * @throws UsernameNotFoundException 이름과 일치한 사용자가 없을때 발생
