@@ -3,7 +3,7 @@ package live.ioteatime.authservice.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import live.ioteatime.authservice.domain.LoginRequestDto;
 import live.ioteatime.authservice.domain.LoginResponseDto;
-import live.ioteatime.authservice.jwt.JwtUtil;
+import live.ioteatime.authservice.jwt.JwtEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class JwtAuthenticationFilterTest {
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtEncoder jwtEncoder;
 
     @Mock
     private AuthenticationManager authenticationManager;
@@ -57,7 +57,7 @@ class JwtAuthenticationFilterTest {
         String id = "testId";
         String pw = "testPw";
         mapper = new ObjectMapper();
-        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtUtil, authenticationManager, mapper);
+        jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtEncoder, authenticationManager, mapper);
         authentication = new UsernamePasswordAuthenticationToken("test", "test");
 
         LoginRequestDto loginRequestDto = new LoginRequestDto();
@@ -102,7 +102,7 @@ class JwtAuthenticationFilterTest {
 
         jwtAuthenticationFilter.successfulAuthentication(request, response, chain, authentication);
 
-        String jwtToken = jwtUtil.createJwt(authentication.getName());
+        String jwtToken = jwtEncoder.createJwt(authentication.getName());
         LoginResponseDto loginResponseDto = new LoginResponseDto("Bearer", jwtToken);
         String expectedResponse = mapper.writeValueAsString(loginResponseDto);
 

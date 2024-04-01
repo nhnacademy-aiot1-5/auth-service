@@ -3,7 +3,7 @@ package live.ioteatime.authservice.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import live.ioteatime.authservice.adaptor.UserServiceAdaptor;
 import live.ioteatime.authservice.filter.JwtAuthenticationFilter;
-import live.ioteatime.authservice.jwt.JwtUtil;
+import live.ioteatime.authservice.jwt.JwtEncoder;
 import live.ioteatime.authservice.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -58,8 +58,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtUtil jwtUtil() {
-        return new JwtUtil();
+    public JwtEncoder jwtUtil() {
+        return new JwtEncoder();
     }
 
     @Bean
