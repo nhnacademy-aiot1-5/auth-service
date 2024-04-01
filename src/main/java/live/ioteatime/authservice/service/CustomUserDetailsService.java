@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     /**
      *
      * @param username  api 서버에 유저 정보를 요청하기위한 파라미터
-     * @return userdetails 객체
+     * @return UserDetails 의 User 객체
      * @throws UsernameNotFoundException 이름과 일치한 사용자가 없을때 발생
      */
     @Override
