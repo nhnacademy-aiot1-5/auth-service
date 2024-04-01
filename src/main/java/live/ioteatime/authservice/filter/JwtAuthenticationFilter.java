@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import live.ioteatime.authservice.domain.LoginRequestDto;
 import live.ioteatime.authservice.domain.LoginResponseDto;
 import live.ioteatime.authservice.exception.AuthenticationFailedException;
-import live.ioteatime.authservice.jwt.JwtUtil;
+import live.ioteatime.authservice.jwt.JwtEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,12 +19,12 @@ import java.io.IOException;
 
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final JwtUtil jwtUtil;
+    private final JwtEncoder jwtEncoder;
     private final AuthenticationManager authenticationManager;
     private final ObjectMapper objectMapper;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
-        this.jwtUtil = jwtUtil;
+    public JwtAuthenticationFilter(JwtEncoder jwtEncoder, AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
+        this.jwtEncoder = jwtEncoder;
         this.authenticationManager = authenticationManager;
         this.objectMapper = objectMapper;
         setFilterProcessesUrl("/login");
@@ -46,7 +46,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
-        String jwtToken = jwtUtil.createJwt(authResult.getName());
+        String jwtToken = jwtEncoder.createJwt(authResult.getName());
         LoginResponseDto loginResponseDto = new LoginResponseDto("Bearer", jwtToken);
         String resp = objectMapper.writeValueAsString(loginResponseDto);
         response.getOutputStream().print(resp);
