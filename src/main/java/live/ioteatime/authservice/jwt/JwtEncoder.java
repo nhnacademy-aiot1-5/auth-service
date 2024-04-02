@@ -37,21 +37,7 @@ public class JwtEncoder {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + 1800000))
-                .signWith(SignatureAlgorithm.HS256,secretValue)
-                .compact();
-    }
-
-    /**
-     *  서버에서 가져온 시크릿 키를 이용해 refresh 토큰 생성
-     * @return refresh 토큰
-     * 유효기간 2주
-     */
-    public String createRefresh() {
-        Date now = new Date();
-
-        return Jwts.builder()
-                .setExpiration(new Date(now.getTime() + 1209600000))
+                .setExpiration(new Date(now.getTime() + 3600000))
                 .signWith(SignatureAlgorithm.HS256,secretValue)
                 .compact();
     }

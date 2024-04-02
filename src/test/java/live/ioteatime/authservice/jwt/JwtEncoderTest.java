@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtEncoderTest {
     private String userId;
     private String jwt;
-   private String refresh;
     @Autowired
     private JwtEncoder jwtEncoder;
 
@@ -28,7 +27,6 @@ class JwtEncoderTest {
         userId = "aa";
 
         jwt = jwtEncoder.createJwt(userId);
-        refresh = jwtEncoder.createRefresh();
     }
 
     @Test
@@ -42,18 +40,6 @@ class JwtEncoderTest {
 
         assertEquals(accessExpiredDate.toString(),expiredDate.toString());
 
-    }
-
-    @Test
-    void testCreateRefresh() {
-        Date now = new Date();
-        assertNotNull(refresh);
-
-        Claims claims = jwtEncoder.getClaim(refresh);
-        Date refreshExpiredDate = claims.getExpiration();
-        Date expiredDate = new Date(now.getTime() + 1209600000);
-
-        assertEquals(refreshExpiredDate.toString(),expiredDate.toString());
     }
 
     @Test
