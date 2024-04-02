@@ -56,4 +56,15 @@ class JwtEncoderTest {
         assertEquals(refreshExpiredDate.toString(),expiredDate.toString());
     }
 
+    @Test
+    void testGetClaim() {
+        Date now = new Date();
+
+        Claims claims = jwtEncoder.getClaim(jwt);
+        Date actual = claims.getExpiration();
+        Date expected = new Date(now.getTime() + 1800000);
+        assertNotNull(claims);
+
+        assertEquals(expected.toString(),actual.toString());
+    }
 }
