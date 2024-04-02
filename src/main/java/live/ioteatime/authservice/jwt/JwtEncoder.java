@@ -5,7 +5,6 @@ import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.time.Duration;
 import java.util.Date;
 
 /**
@@ -29,6 +28,7 @@ public class JwtEncoder {
      *  - getSubject 사용해서 바로 가져올수있다.
      *  토큰 유효기간은 3시간
      *  알고리즘에 시크릿키를 넣어 암호화
+     *  유효기간 30분
      */
     public String createJwt(String userId) {
 
@@ -37,34 +37,32 @@ public class JwtEncoder {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + Duration.ofHours(3).toMillis()))
+                .setExpiration(new Date(now.getTime() + 1800000))
                 .signWith(SignatureAlgorithm.HS256,secretValue)
                 .compact();
     }
 
     /**
-     *
-     * @param jwt 디코딩할 jwt
-     * @return String 형식의 userId
-     * 시그니처키를 이용한 복호화
-     *
+     *  서버에서 가져온 시크릿 키를 이용해 refresh 토큰 생성
+     * @return refresh 토큰
+     * 유효기간 2주
      */
-    public String getUserId(String jwt) {
-        if (jwt.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
-        try {
-            Claims claimsJwts = Jwts.parserBuilder()
-                    .setSigningKey(secretValue)
-                    .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-            return claimsJwts.getSubject();
-        } catch (SecurityException | MalformedJwtException e) {
-            log.error("유효하지 않은 토큰 {} ", e.getMessage());
-        } catch (ExpiredJwtException e) {
-            log.error("만료된 토큰 {} ", e.getMessage());
-        }
-        return null;
+    public String createRefresh() {
+        Date now = new Date();
+
+        return Jwts.builder()
+                .setExpiration(new Date(now.getTime() + 1209600000))
+                .signWith(SignatureAlgorithm.HS256,secretValue)
+                .compact();
     }
+
+    /**
+     *  토큰 안의 Claims 반환
+     * @param jwt 토큰값
+     * @return 토큰 값 안의 Claims 정보
+     */
+    public Claims getClaim(String jwt) {
+        return Jwts.parserBuilder().setSigningKey(secretValue).build().parseClaimsJws(jwt).getBody();
+    }
+
 }
