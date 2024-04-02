@@ -26,9 +26,8 @@ public class JwtEncoder {
      * @return String 형의 토큰
      * 제목을 userId로 지정해준 이유
      *  - getSubject 사용해서 바로 가져올수있다.
-     *  토큰 유효기간은 3시간
+     *  토큰 유효기간은 1시간
      *  알고리즘에 시크릿키를 넣어 암호화
-     *  유효기간 30분
      */
     public String createJwt(String userId) {
 
