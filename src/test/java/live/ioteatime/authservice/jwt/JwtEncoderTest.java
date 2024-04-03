@@ -9,7 +9,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +26,7 @@ class JwtEncoderTest {
 
     @BeforeEach
     void setUp() {
-        userId = "aa";
+        userId = "bb";
 
         jwt = jwtEncoder.createJwt(userId);
     }
@@ -36,9 +38,13 @@ class JwtEncoderTest {
 
         Claims claims = jwtEncoder.getClaim(jwt);
         Date accessExpiredDate = claims.getExpiration();
-        Date expiredDate = new Date(now.getTime() + 1800000);
 
-        assertEquals(accessExpiredDate.toString(),expiredDate.toString());
+        TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(gmtTimeZone);
+
+        Date expiredDate = new Date(now.getTime() + 3600000);
+        assertEquals(sdf.format(accessExpiredDate),sdf.format(expiredDate));
 
     }
 
@@ -48,9 +54,14 @@ class JwtEncoderTest {
 
         Claims claims = jwtEncoder.getClaim(jwt);
         Date actual = claims.getExpiration();
-        Date expected = new Date(now.getTime() + 1800000);
+
+        TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        sdf.setTimeZone(gmtTimeZone);
+
+        Date expected = new Date(now.getTime() + 3600000);
         assertNotNull(claims);
 
-        assertEquals(expected.toString(),actual.toString());
+        assertEquals(sdf.format(expected),sdf.format(actual));
     }
 }
