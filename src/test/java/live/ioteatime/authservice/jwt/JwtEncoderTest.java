@@ -1,15 +1,21 @@
 package live.ioteatime.authservice.jwt;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.Date;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
+@Slf4j
 class JwtEncoderTest {
     private String userId;
     private String jwt;
@@ -26,11 +32,25 @@ class JwtEncoderTest {
     @Test
     void createJwtTest() {
         assertFalse(jwt.isEmpty());
+        Date now = new Date();
+
+        Claims claims = jwtEncoder.getClaim(jwt);
+        Date accessExpiredDate = claims.getExpiration();
+        Date expiredDate = new Date(now.getTime() + 1800000);
+
+        assertEquals(accessExpiredDate.toString(),expiredDate.toString());
+
     }
 
     @Test
-    void getUserIdToJwt() {
-       String actual= jwtEncoder.getUserId(jwt);
-        assertEquals("aa", actual);
+    void testGetClaim() {
+        Date now = new Date();
+
+        Claims claims = jwtEncoder.getClaim(jwt);
+        Date actual = claims.getExpiration();
+        Date expected = new Date(now.getTime() + 1800000);
+        assertNotNull(claims);
+
+        assertEquals(expected.toString(),actual.toString());
     }
 }

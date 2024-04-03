@@ -11,10 +11,19 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.Collections;
 import java.util.Optional;
 
+/**
+ * AuthenticationProvider 가 인증처리를 위해 사용하는 UserDetailsService
+ */
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserServiceAdaptor userServiceAdaptor;
 
+    /**
+     * 직접 api 서버에 유저정보를 얻어와 AuthenticationProvider 에게전달
+     * @param username  api 서버에 유저 정보를 요청하기위한 파라미터
+     * @return UserDetails 의 User 객체
+     * @throws UsernameNotFoundException 이름과 일치한 사용자가 없을때 발생
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> userOptional = userServiceAdaptor.getUser(username);
