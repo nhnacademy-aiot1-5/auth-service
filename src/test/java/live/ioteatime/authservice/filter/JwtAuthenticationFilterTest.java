@@ -3,8 +3,10 @@ package live.ioteatime.authservice.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import live.ioteatime.authservice.domain.LoginRequestDto;
 import live.ioteatime.authservice.domain.LoginResponseDto;
+import live.ioteatime.authservice.exception.AuthenticationFailedException;
 import live.ioteatime.authservice.jwt.JwtEncoder;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,9 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.WriteListener;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
@@ -26,8 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
@@ -77,6 +76,34 @@ class JwtAuthenticationFilterTest {
         Authentication result = jwtAuthenticationFilter.attemptAuthentication(request, response);
 
         assertNotNull(result);
+    }
+
+    @Test
+    void attemptAuthenticationException() throws IOException {
+        ServletInputStream inputStream = new ServletInputStream() {
+            @Override
+            public int read() throws IOException {
+                throw new IOException("Test IOException");
+            }
+
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+
+            @Override
+            public boolean isReady() {
+                return true;
+            }
+
+            @Override
+            public void setReadListener(ReadListener readListener) {
+            }
+        };
+
+        given(request.getInputStream()).willReturn(inputStream);
+        Assertions.assertThrows(AuthenticationFailedException.class, () ->
+                jwtAuthenticationFilter.attemptAuthentication(request, response));
     }
 
     @Test
