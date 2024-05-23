@@ -8,6 +8,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,7 +19,7 @@ class UserServiceAdaptorTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.initMocks(this); // 목 객체 초기화
+        MockitoAnnotations.openMocks(this); // 목 객체 초기화
     }
     @Test
     void getUser() {
@@ -30,7 +31,7 @@ class UserServiceAdaptorTest {
         Optional<User> actual = userServiceAdaptor.getUser(userId);
         assertTrue(actual.isPresent());
         User response = actual.get();
-        assertTrue(response.getId().equals(userId));
+        assertEquals(response.getId(), userId);
 
         verify(userServiceAdaptor).getUser(userId);
     }
