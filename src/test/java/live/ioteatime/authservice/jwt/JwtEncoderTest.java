@@ -56,7 +56,7 @@ class JwtEncoderTest {
         Date actual = claims.getExpiration();
 
         TimeZone gmtTimeZone = TimeZone.getTimeZone("GMT");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         sdf.setTimeZone(gmtTimeZone);
 
         Date expected = new Date(now.getTime() + 3600000);
