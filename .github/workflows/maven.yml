@@ -43,7 +43,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            export AUTH_IMAGE_TAG=${{ github.sha }}
+            echo "export AUTH_IMAGE_TAG=${{ github.sha }}" >> ~/.bashrc
+
             SERVICE_NAME="auth-service"
             
             COMPOSE_DIR="./projects/docker-compose"
