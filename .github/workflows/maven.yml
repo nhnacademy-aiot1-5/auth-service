@@ -43,7 +43,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            grep -q 'export AUTH_IMAGE_TAG=' ~/.bashrc && sed -i 's/export AUTH_IMAGE_TAG=.*/export AUTH_IMAGE_TAG=${{ github.sha }}/' ~/.bashrc || echo 'export AUTH_IMAGE_TAG=${{ github.sha }}' >> ~/.bashrc
+            echo "AUTH_IMAGE_TAG=${{ github.sha }}" > .env
             source ~/.bashrc
             SERVICE_NAME="auth-service"
             
